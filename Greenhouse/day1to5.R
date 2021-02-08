@@ -36,14 +36,6 @@ kruskal.test(dry.weight ~ treatment, data = dt)
 #With a P Value smaller than 0.05
 #As the p-value is less than the significance level 0.05, we can conclude that there are significant differences between the treatment groups.
 
-cap <- paste0(
-  "Figure ", fn, ": Effect of different sprays in the insects populations",
-  " sizes.",
-  " Red letters indicates Tukey HSD posthoc comparissons.",
-  " Same letter indicates non-significant differences for alpha = 0.05.")
-
-
-
 
 anova <- lm(dry.weight ~ treatment, data = dt)
 agri <- HSD.test(anova, 'treatment', alpha = 0.05, group=TRUE, main = "HSD Test")
@@ -62,7 +54,10 @@ leveneTest(fresh.weight ~ as.character(treatment), data = dt)
 shapiro.test(x = aov_residuals )
 #p-value = 0.24 > 0.05 we can assume normality
 summary(res.aov) 
-#With a P value=0.597 > 0.05 we prove there there are NOT significant difference
+#With a P value < 0.05 we prove there there are NOT significant difference
+
+pairwise.t.test(dt$fresh.weight, dt$treatment ,
+                p.adjust.method = "BH")
 
 #3.Length
 
@@ -77,7 +72,10 @@ leveneTest(final.length ~ as.character(treatment), data = dt)
 shapiro.test(x = aov_residuals )
 #p-value = 0.4311 > 0.05 we can assume normality
 summary(res.aov) 
-#With a P value=0.27 > 0.05 we prove there there are NOT significant difference
+#With a P value < 0.05 we prove there there are  significant difference
+pairwise.t.test(dt$final.length, dt$treatment ,
+                p.adjust.method = "BH")
+
 
 ###Lollium
 dt <- subset(data.final, data.final$species == "lolium")
@@ -92,15 +90,39 @@ leveneTest(dry.weight ~ as.character(treatment), data = dt)
 #P Value 0.5332
 shapiro.test(x = aov_residuals )
 #p-value = 0.02255 > 0.05 we can NOT assume normality
-summary(res.aov) 
+#summary(res.aov) 
 
 
 anova <- lm(dry.weight ~ treatment, data = dt)
 agri <- HSD.test(anova, 'treatment', alpha = 0.05, group=TRUE, main = "HSD Test")
 plot(agri, main = "Lollium - dry weight", ylab = "Dry weight", xlab = "Type of spray", sub = "two groups of effects: a and b")
 
-##
+##2.fresh.weight
 
+res.aov <- aov(lm(fresh.weight ~ treatment, dt))
+aov_residuals <- residuals(object = res.aov )
+
+
+leveneTest(fresh.weight ~ as.character(treatment), data = dt)
+#From the output above we can see that the p-value is not less than the significance level of 0.05. This means that there is no evidence to suggest that the variance across groups is statistically significantly different. Therefore, we can assume the homogeneity of variances in the different treatment groups.
+#P Value 0.2145
+shapiro.test(x = aov_residuals )
+#p-value = 0.2455 > 0.05 we can NOT assume normality
+summary(res.aov) 
+#With a P value=0.6 > 0.05 we prove there there are NOT significant difference
+
+##3.final.length
+res.aov <- aov(lm(final.length ~ treatment, dt))
+aov_residuals <- residuals(object = res.aov )
+
+
+leveneTest(final.length  ~ as.character(treatment), data = dt)
+#From the output above we can see that the p-value is not less than the significance level of 0.05. This means that there is no evidence to suggest that the variance across groups is statistically significantly different. Therefore, we can assume the homogeneity of variances in the different treatment groups.
+#P Value 0.5591
+shapiro.test(x = aov_residuals )
+#p-value = 0.4311 > 0.05 we can NOT assume normality
+summary(res.aov) 
+#P value = 0.27, no significant differences
 
 #tab <- data.frame(matrix(ncol = 5, nrow = 20))
 
