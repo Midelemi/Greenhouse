@@ -4,13 +4,13 @@ library("dplyr")
 library("ggpubr")
 library(car)
 library(agricolae)
-
-TA2 <- aggregate(list(data.final$dry.weight, data.final$final.length, data.final$fresh.weight), 
+data.final
+TA2 <- aggregate(list(data.final$dry.weight, data.final$final.length, data.final$fresh.weight,data.final$root.shoot), 
                  by = list(data.final$treatment, data.final$species),
                  FUN = function(x) c(mean = mean(x))
                  )
 TA2 <- as.data.frame(as.matrix(TA2))
-names(TA2) <- c("treatment", "species", "dry.weight","final.length","fresh.weight")
+names(TA2) <- c("treatment", "species", "dry.weight","final.length","fresh.weight","root.shoot")
 
 barplot(height=as.numeric(TA2$dry.weight), names=TA2$treatment)
 
@@ -76,6 +76,19 @@ summary(res.aov)
 pairwise.t.test(dt$final.length, dt$treatment ,
                 p.adjust.method = "BH")
 
+##Root shoot
+res.aov <- aov(lm(root.shoot ~ treatment, dt))
+aov_residuals <- residuals(object = res.aov )
+
+
+leveneTest(root.shoot ~ as.character(treatment), data = dt)
+#From the output above we can see that the p-value is not less than the significance level of 0.05. This means that there is no evidence to suggest that the variance across groups is statistically significantly different. Therefore, we can assume the homogeneity of variances in the different treatment groups.
+#P Value 0.1166
+shapiro.test(x = aov_residuals )
+#p-value = 0.03 > 0.05 we can NOT assume normality
+summary(res.aov)
+
+
 
 ###Lollium
 dt <- subset(data.final, data.final$species == "lolium")
@@ -134,7 +147,7 @@ my_bar <- barplot(as.numeric(TA2$final.length) , border=F , names.arg=TA2$specie
                   col=c("green" , "red" ,"blue4" ,  "blue2"), 
                   xlab = "Species", 
                    ylim=c(0,120) , 
-                  main="" )
+                  main="Final lenght" )
 #abline(v=c(4.5) , col="grey")
 #text(my_bar + 60 , paste(" a") ,cex=1 )
 par(mar=c(5.1, 4.1, 4.1, 11), xpd=TRUE)
@@ -164,6 +177,24 @@ legend(x="topright", legend = c("Control","Water stress","200mM", "500mM" ) ,
        bty = "n", pch=20 , pt.cex = 2, cex = 1, horiz = FALSE)
 
 
+#Fresh weight
+
+my_bar <- barplot(as.numeric(TA2$fresh.weight) , border=F , names.arg=TA2$species , 
+                  las=1, space=c(0.25,0.25,0.25,0.25,2.5,0.25,0.25,0.25),
+                  col=c("green" , "red" ,"blue4" ,  "blue2"), 
+                  xlab = "Species", 
+                  ylab = "Weight (g)",
+                  ylim=c(0,6) , 
+                  main="Fresh weight" )
+#abline(v=c(4.5) , col="grey")
+#text(my_bar + 60 , paste(" a") ,cex=1 )
+par(mar=c(5.1, 4.1, 4.1, 11), xpd=TRUE)
+
+legend(x="topright", legend = c("Control","Water stress","200mM", "500mM" ) , 
+       col = c("green" , "red" ,"blue4" ,  "blue2") , 
+       xpd=TRUE,inset=c(-1.4,-0.2),
+       bty = "n", pch=20 , pt.cex = 2, cex = 1, horiz = FALSE)
+
 #tab <- data.frame(matrix(ncol = 5, nrow = 20))
 
 #colnames(tab) <- c("species","treatment","average length", "average fresh weight", "average")
@@ -172,3 +203,5 @@ legend(x="topright", legend = c("Control","Water stress","200mM", "500mM" ) ,
 #a1 <- data.final[ which(data.final$species =="triticum" & data.final$treatment == j),]
 #tab <- data.frame(tab, "triticum",j,mean(a1$dry.weight),mean(a1$final.length),mean(a1$fresh.weight))}
 
+library("writexl")
+write_xlsx(TA2,"c:\\Users\\serba\\Desktop\\Table.xlsx")
