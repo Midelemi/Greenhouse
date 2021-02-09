@@ -124,6 +124,20 @@ shapiro.test(x = aov_residuals )
 summary(res.aov) 
 #P value = 0.27, no significant differences
 
+
+my_bar <- barplot(as.numeric(TA2$final.length) , border=F , names.arg=TA2$species , 
+                  las=3, space=c(0,0,0,0,2.5),
+                  col=c(rgb(0.3,0.1,0.4,0.6) , rgb(0.3,0.5,0.4,0.6) , rgb(0.3,0.9,0.4,0.6) ,  rgb(0.3,0.9,0.4,0.6)) , 
+                
+                   ylim=c(0,100) , 
+                  main="" )
+abline(v=c(4.5) , col="grey")
+text(my_bar , paste( ) ,cex=1) 
+legend("bottom", legend = c("Control","Water stress","200mM", "500mM" ) , 
+       col = c(rgb(0.3,0.1,0.4,0.6) , rgb(0.3,0.5,0.4,0.6) , rgb(0.3,0.9,0.4,0.6) ,  rgb(0.3,0.9,0.4,0.6)) , 
+       bty = "n", pch=20 , pt.cex = 2, cex = 0.8, horiz = FALSE, inset = c(0.05, 0.05))
+
+
 #tab <- data.frame(matrix(ncol = 5, nrow = 20))
 
 #colnames(tab) <- c("species","treatment","average length", "average fresh weight", "average")
